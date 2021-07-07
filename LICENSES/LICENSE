@@ -1,11 +1,11 @@
-The translated license terms can be viewed here: https://www-03.ibm.com/software/sla/sladb.nsf/searchlis/?searchview&searchorder=4&searchmax=0&query=(IBM App Connect Enterprise 11.0.0.9 certified container for Developers V3.1)
+The translated license terms can be viewed here: https://www-03.ibm.com/software/sla/sladb.nsf/searchlis/?searchview&searchorder=4&searchmax=0&query=(IBM App Connect Enterprise certified container for Developers V2.2)
 
 LICENSE INFORMATION
 
 The Programs listed below are licensed under the following License Information terms and conditions in addition to the Program license terms previously agreed to by Client and IBM. If Client does not have previously agreed to license terms in effect for the Program, the International License Agreement for Non-Warranted Programs (Z125-5589-05) applies.
 
 Program Name (Program Number):
-IBM App Connect Enterprise 11.0.0.9 certified container for Developers V3.1 (5724-J05)
+IBM App Connect Enterprise 11.0.0.6 certified container for Developers V2.2 (5724-J05)
 
 The following standard terms apply to Licensee's use of the Program.
 
@@ -18,7 +18,7 @@ Supporting Programs
 Licensee is authorized to install and use the Supporting Programs identified below. Licensee is authorized to install and use such Supporting Programs only to support Licensee's use of the Principal Program under this Agreement. The phrase "to support Licensee's use" would only include those uses that are necessary or otherwise directly related to a licensed use of the Principal Program or another Supporting Program. The Supporting Programs may not be used for any other purpose. A Supporting Program may be accompanied by license terms, and those terms, if any, apply to Licensee's use of that Supporting Program. In the event of conflict, the terms in this License Information document supersede the Supporting Program's terms. Licensee must obtain sufficient entitlements to the Program, as a whole, to cover Licensee's installation and use of all of the Supporting Programs, unless separate entitlements are provided within this License Information document. For example, if this Program were licensed on a PVU (Processor Value Unit) basis and Licensee were to install the Principal Program or a Supporting Program on a 100 PVU machine (physical or virtual) and another Supporting Program on a second 100 PVU machine, Licensee would be required to obtain 200 PVU entitlements to the Program.
 
 Supporting Programs:
-- IBM App Connect Enterprise for Developers V11.0.0.9
+- IBM App Connect Enterprise for Developers V11.0.0.6
 - IBM MQ Advanced V9.1.3
 
 Developer Limitation
@@ -48,133 +48,40 @@ The Program includes some or all of the following licensed to you as Separately 
 1. CC-BY-3.0
 2. CC0-1.0
 3. CC-BY-4.0
-4. CC-BY-SA-4.0
-5. Ubuntu
-6. Red Hat Enterprise Linux (RHEL)
-7. Red Hat Universal Base Image
-8. GPL 2.0 (stunnel)
-9. GPL 2.0
-10. GPL V3.0
-11. SIL OPEN FONT LICENSE 1.1
+4. Ubuntu
+5. Red Hat Enterprise Linux (RHEL)
+6.Red Hat Universal Base Image v7.0 & V8.0
 ===================================================================
-1. CREATIVE COMMONS ATTRIBUTION 3.0
+1. spdx-exceptions(node) , spdx-expression-parse
+License for CreativeCommons-by-3.0
 ===================================================================
-
-The Program includes some or all of the following works licensed under
-the Creative Commons.
-The url to the license is https://creativecommons.org/licenses/by/3.0/legalcode
-
-SPDX SPECIFICATION [spdx-expression-parse]
-(http://registry.npmjs.org/spdx-expression-parse/-/spdx-expression-parse-1.0.2.tgz),
-SPDX-EXCEPTIONS
-(http://registry.npmjs.org/spdx-exceptions/-/spdx-exceptions-2.2.0.tgz)
-
-END OF CREATIVE COMMONS ATTRIBUTION 3.0 GENERIC NOTICES AND INFORMATION
-
 ===================================================================
-2.  License for Creative Commons CC0-1.0
+2.  spdx-license-ids(node)
+License for Creative Commons CC0-1.0
 ===================================================================
-
-basic-globalize-compiler globalize-hello-world-amd-bower globalize-hello-world-node-npm libnpx make-fetch-happen spdx-license-ids
-
 ===================================================================
-3. CREATIVE COMMONS ATTRIBUTION 4.0
+3.  caniuse-db, caniuse-lite
+License for Creative Commons CC-BY-4.0
 ===================================================================
-
-The Program includes some or all of the following works licensed under
-the Creative Commons.
-The url to the license is https://creativecommons.org/licenses/by/4.0/legalcode
-
-WORDNIK [z-schema]
-(http://registry.npmjs.org/z-schema/-/z-schema-4.2.3.tgz), CANIUSE-LITE
-(https://github.com/ben-eb/caniuse-lite/tree/v1.0.30000989), CANIUSE-DB, SWAGGER
-PETSTORE (https://github.com/swagger-api/swagger-petstore),
-IBM-DESIGN-COLORS
-(http://registry.npmjs.org/ibm-design-colors/-/ibm-design-colors-1.8.1.tgz)
-
-END OF CREATIVE COMMONS ATTRIBUTION 4.0 GENERIC NOTICES AND INFORMATION
-
 ===================================================================
-4. CREATIVE COMMONS ATTRIBUTION SHARE ALIKE 4.0
-===================================================================
-
-The Program includes some or all of the following works licensed under
-the Creative Commons.
-The url to the license is https://creativecommons.org/licenses/by-sa/4.0/legalcode
-
-GLOB LOGO [Glob] (http://registry.npmjs.org/glob/-/glob-7.1.6.tgz)
-
-END OF CREATIVE COMMONS ATTRIBUTION SHARE ALIKE 4.0 GENERIC NOTICES AND INFORMATION
-
-===================================================================
-5. Ubuntu Operating System
+4. Ubuntu Operating System
 ===================================================================
 When IBM App Connect  Enterprise is provided in a container format, license information for Ubuntu packages may be found in /usr/share/doc/${package}/copyright
-
 =========================================================================
-6. Red Hat Enterprise Linux Operating System
+5.Red Hat Enterprise Linux Operating System
 =========================================================================
 When IBM App Connect  Enterprise is provided in a container format, license information for Red Hat Enterprise Linux packages may be found in /usr/share/doc/${package}
-
 =========================================================================
-7.Red Hat Universal Base Image
+6.Red Hat Universal Base Image v 7.0 & V8.0
 =========================================================================
 Red Hat Universal Base Image has been taken under EULA > https://www.redhat.com/licenses/eulas
 
 The Program maybe provided with third party software programs subject to their own license terms. The license terms either accompany the third party software programs or, in some instances, may be viewed at > https://access.redhat.com/containers/
-
-=========================================================================
-8. GPL 2.0 - stunnel
-=========================================================================
-When IBM App Connect  Enterprise is provided in a container format, it uses the binary image of stunnel as a separate running program to offer internal connectivity protocol conversion only.
-
-=========================================================================
-9. GNU GENERAL PUBLIC LICENSE, VERSION 2
-=========================================================================
-
-The Program includes some or all of the following licensed to you as
-Separately Licensed Code under the GNU General Public License. For copies
-of the source code for this software, send an email to ask.application.integration@uk.ibm.com identifying the IBM product and the GPL-licensed program for which you are requesting the source code
-
-LTMAIN [UnixODBC], MINDTERM [JZlib], ISQL [UnixODBC], MATCH.S [Zlib],
-/ZLIB-1.2.4/CONTRIB/ADA/ZLIB.ADS [Zlib], BISON IMPLEMENTATION FOR
-YACC-LIKE PARSERS IN C [UnixODBC], PSQLODBC.DLL [UnixODBC], NN-DRIVERS
-[UnixODBC]
-
-END OF GNU GENERAL PUBLIC LICENSE, VERSION 2 NOTICES AND INFORMATION
-
-=========================================================================
-10. GNU GENERAL PUBLIC LICENSE, VERSION 3
-=========================================================================
-
-The Program includes some or all of the following licensed to you as
-Separately Licensed Code under the GNU General Public License. For copies
-of the source code for this software, send an email to ask.application.integration@uk.ibm.com identifying the IBM product and the GPL-licensed program for which you
-are requesting the source code
-
-CONFIG.GUESS [UnixODBC]
-
-END OF GNU GENERAL PUBLIC LICENSE, VERSION 3 NOTICES AND INFORMATION
-
-=========================================================================
-11. SIL OPEN FONT LICENSE 1.1
-=========================================================================
-
-The Program includes some or all of the following works licensed under
-the SIL OPEN FONT LICENSE 1.1
-
-FONT AWESOME 4.1.0 FONT [Apache Jena]
-=========================================================================
-END OF SIL OPEN FONT LICENSE 1.1 LICENSE NOTICES AND INFORMATION
-=========================================================================
-END OF IBM NOTICES AND INFORMATION xzx
-=========================================================================
-END OF NOTICE FILE
 =========================================================================
 
 Source Components and Sample Materials
 
-The Program may include some components in source code form ("Source Components") and other materials identified as Sample Materials. Licensee may copy and modify Source Components and Sample Materials for internal use only provided such use is within the limits of the license rights under this Agreement; provided, however, that Licensee may not alter or delete any copyright information or notices contained in the Source Components or Sample Materials. IBM provides the Source Components and Sample Materials without obligation of support and "AS IS", WITH NO WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING THE WARRANTY OF TITLE, NON-INFRINGEMENT OR NON-INTERFERENCE AND THE IMPLIED WARRANTIES AND CONDITIONS OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+The Program may include some components in source code form ("Source Components") and other materials identified as Sample Materials. Licensee may copy and modify Source Components and Sample Materials for internal use only provided such use is within the limits of the license rights under this Agreement, provided however that Licensee may not alter or delete any copyright information or notices contained in the Source Components or Sample Materials. IBM provides the Source Components and Sample Materials without obligation of support and "AS IS", WITH NO WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING THE WARRANTY OF TITLE, NON-INFRINGEMENT OR NON-INTERFERENCE AND THE IMPLIED WARRANTIES AND CONDITIONS OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
 Third Party Operating Systems
 
@@ -209,10 +116,9 @@ Licensee may not exploit any distributable Microsoft Code (i.e., source code and
 
 The Program contains sample source code that is derived from the distributable Microsoft Code in source code form. Licensee must not include any such sample source code derived from distributable Microsoft Code in any malicious, deceptive or unlawful program.
 
-L/N:  L-AMYG-BQEQGW
-D/N:  L-AMYG-BQEQGW
-P/N:  L-AMYG-BQEQGW
-
+L/N:  L-DFOX-BFXJZ6
+D/N:  L-DFOX-BFXJZ6
+P/N:  L-DFOX-BFXJZ6
 
 International License Agreement for Non-Warranted Programs
 
@@ -913,3 +819,5 @@ b. special, incidental, exemplary, or indirect damages or consequential damages;
 c. wasted management time or lost profits, business, revenue, goodwill, or anticipated savings.
 
 Z125-5589-05 (07/2011)
+
+

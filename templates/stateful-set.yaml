@@ -16,8 +16,6 @@
 {{- $saName := include "sch.names.fullCompName" (list . "serviceaccount") }}
 {{- $pvcName := .Values.dataPVC.name }}
 {{- $fullName := include "sch.names.fullName" (list .) }}
-{{- $initName := include "sch.names.fullCompName" (list . "init") }}
-{{- $jobName := include "sch.names.fullCompName" (list . "config-gen") }}
 {{- $statefulSetName := include "sch.names.statefulSetName" (list . ) }}
 {{- $designerFlowsName := include "sch.names.fullCompName" (list . "designer-flows") }}
 {{- $tracingAgentName := include "sch.names.fullCompName" (list . "od-tracing-agent") }}
@@ -26,8 +24,6 @@
 {{- $volumeClaimTemplateName := include "sch.names.volumeClaimTemplateName" (list . $pvcName $statefulSetName) }}
 {{- $saName := include "sch.names.fullCompName" (list . "serviceaccount") }}
 {{- $serverName := .Values.integrationServer.name | default .Release.Name | replace "-" "" }}
-{{- $httpRouteName := (print .Release.Name "-http") }}
-{{- $httpsRouteName := (print .Release.Name "-https") }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -49,11 +45,7 @@ spec:
   template:
     metadata:
       annotations:
-        productName: IBM App Connect Enterprise for Developers (Free)
-        productID: IBMAppConnectEnterprise_f9e7010beec748fe98ff292138860707
-        productVersion: 11.0.0.9-r2
-        productMetric: VIRTUAL_PROCESSOR_CORE
-        productChargedContainers: ''
+{{- include "sch.metadata.annotations.metering" (list . .sch.chart.metering) | indent 8 }}
       name: {{ $statefulSetName }}
       labels:
 {{ include "sch.metadata.labels.standard" (list . ) | indent 8 }}
@@ -68,6 +60,10 @@ spec:
                 values:
                 - {{ .Values.arch }}
       serviceAccountName: {{ $saName }}
+      {{- if .Values.image.pullSecret }}
+      imagePullSecrets:
+        - name: {{ .Values.image.pullSecret }}
+      {{- end }}
       hostNetwork: false
       hostPID: false
       hostIPC: false
@@ -116,12 +112,8 @@ spec:
               value: {{ .Values.metrics.enabled | default true | quote }}
             - name: ACE_ENABLE_OPEN_TRACING
               value: {{ .Values.odTracingConfig.enabled | default false | quote }}
-            - name: ACE_HTTP_ROUTE_NAME
-              value: {{ $httpRouteName }}
-            - name: ACE_HTTPS_ROUTE_NAME
-              value: {{ $httpsRouteName }}
-            - name: ACE_ENDPOINT_TYPE
-              value: {{ .Values.service.endpointType }}
+            - name: MQSI_OVERRIDE_HOSTNAME
+              value: {{ .Values.service.iP }}
             - name: "ACE_KEYSTORE_PASSWORD"
               valueFrom:
                  secretKeyRef:
@@ -138,20 +130,18 @@ spec:
               value: {{ .Values.integrationServer.defaultAppName | quote }}
             - name: MQ_EPHEMERAL_PREFIX
               value: "/run/mqm"
-            {{- if .Values.acemq.qmSecret.mqAdminPasswordKey }}
             - name: MQ_ADMIN_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.acemq.qmSecret.name }}
-                  key: {{ .Values.acemq.qmSecret.mqAdminPasswordKey }}
-            {{- end }}
-            {{- if .Values.acemq.qmSecret.mqAppPasswordKey }}
+                  name: {{ $secretName }}
+                  optional: true
+                  key: adminPassword
             - name: MQ_APP_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.acemq.qmSecret.name }}
-                  key: {{ .Values.acemq.qmSecret.mqAppPasswordKey }}
-            {{- end }}
+                  name: {{ $secretName }}
+                  optional: true
+                  key: appPassword
             - name: DEFAULT_CONTENT_SERVER
               value: "true"
           volumeMounts:
@@ -205,13 +195,15 @@ spec:
               readonly: true
             {{- end }}
             {{- end }}
-            {{- if ne .Values.designerFlowsOperationMode "disabled" }}
+            {{- if .Values.designerFlowsEnabled }}
             - name: tmp
               mountPath: "/tmp"
             - name: workdir
               mountPath: "/home/aceuser/ace-server"
             {{- end }}
           securityContext:
+            seLinuxOptions:
+              type: spc_t
             allowPrivilegeEscalation: true
             readOnlyRootFilesystem: false
             runAsNonRoot: true
@@ -219,9 +211,19 @@ spec:
             privileged: false
             capabilities:
               add:
-                - CHOWN
-                - FOWNER
-                - DAC_OVERRIDE
+              - SETPCAP
+              - AUDIT_WRITE
+              - CHOWN
+              - NET_RAW
+              - DAC_OVERRIDE
+              - FOWNER
+              - FSETID
+              - KILL
+              - SETUID
+              - SETGID
+              - NET_BIND_SERVICE
+              - SYS_CHROOT
+              - SETFCAP
               drop:
               - ALL
           # Set liveness probe to determine if the Integration Server is running
@@ -247,7 +249,7 @@ spec:
 {{ toYaml .Values.acemq.resources.limits | indent 14 }}
             requests:
 {{ toYaml .Values.acemq.resources.requests | indent 14 }}
-          {{- if ne .Values.designerFlowsOperationMode "disabled" }}
+          {{- if .Values.designerFlowsEnabled }}
         - name: "{{ $designerFlowsName }}"
           image: "{{ .Values.image.designerflows }}-{{ .Values.arch }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
@@ -256,8 +258,6 @@ spec:
               value: {{ .Values.image.tag }}
             - name: bunyan__logfile__filename
               value: "/opt/ibm/app/ace-server/log/integration_server.{{ $serverName }}.designer_flows.txt"
-            - name: DESIGNER_FLOWS_OPERATION_MODE
-              value: {{ .Values.designerFlowsOperationMode }}
           volumeMounts:
             - name: tmp
               mountPath: "/tmp"
@@ -304,7 +304,7 @@ spec:
             - name: icp4i-od-ca-certificate
               mountPath: "/usr/share/jaeger/ca/certs" 
           command: ["/go/bin/agent-linux"]
-          args: 
+          args:
             - "--jaeger.tags=sourceNamespace={{ .Release.Namespace }}"
           ports:
             - containerPort: 5775
@@ -314,17 +314,17 @@ spec:
             - containerPort: 6832
               protocol: UDP
             - containerPort: 5778
-              protocol: TCP            
+              protocol: TCP
           env:
             - name: COLLECTOR_HOST_PORT
               value : {{ template "odTracing.collector.host-port" . }}
             - name: REPORTER_TYPE
               value : "grpc"
             - name: REPORTER_GRPC_HOST_PORT
-              value : {{ template "odTracing.collector.grpc-host-port" . }}              
+              value : {{ template "odTracing.collector.grpc-host-port" . }}
             - name: REPORTER_GRPC_TLS
               value : "false"
-            - name: OD_SOURCE_NAMESPACE  
+            - name: OD_SOURCE_NAMESPACE
               value : {{ .Release.Namespace }}
           securityContext:
             allowPrivilegeEscalation: false
@@ -362,8 +362,8 @@ spec:
           image: "{{ .Values.odTracingConfig.odCollectorImageRepository }}:{{ .Values.odTracingConfig.odCollectorImageTag }}-{{ .Values.arch }}"
           volumeMounts:
             - name: icp4i-od-ca-certificate
-              mountPath: "/usr/share/jaeger/ca/certs" 
-          ports:            
+              mountPath: "/usr/share/jaeger/ca/certs"
+          ports:
             - containerPort: 14250
               name: grpc
               protocol: TCP
@@ -382,9 +382,9 @@ spec:
             - containerPort: 14987
               name: liveliness
               protocol: TCP
-          env:            
+          env:
             - name: SPAN_STORAGE_TYPE
-              value: elasticsearch            
+              value: elasticsearch
             - name: ES_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -396,9 +396,9 @@ spec:
                   name: {{ template "odTracing.collector.elasticsearch-secret-name" . }}
                   key: username
             - name: ES_SERVER_URLS
-              value: {{ template "odTracing.collector.elasticsearch-url" . }} 
-            - name: ES_TLS_CA     
-              value: '/usr/share/jaeger/ca/certs/icp4i-od-cacert.pem'          
+              value: {{ template "odTracing.collector.elasticsearch-url" . }}
+            - name: ES_TLS_CA
+              value: '/usr/share/jaeger/ca/certs/icp4i-od-cacert.pem'
             - name: COLLECTOR_PORT
               value: "14267"
             - name: COLLECTOR_HTTP_PORT
@@ -415,7 +415,7 @@ spec:
             privileged: false
             capabilities:
               drop:
-                - ALL  
+                - ALL
           resources:
             limits:
               cpu: 500m
@@ -437,40 +437,13 @@ spec:
             periodSeconds: {{ .Values.odTracingConfig.odCollectorLivenessProbe.periodSeconds }}
             timeoutSeconds: {{ .Values.odTracingConfig.odCollectorLivenessProbe.timeoutSeconds }}
             failureThreshold: {{ .Values.odTracingConfig.odCollectorLivenessProbe.failureThreshold }}
-        {{- end }} 
-      {{- if or .Values.contentServerURL .Values.acemq.initVolumeAsRoot }}
-      initContainers:
-      {{- end }}
-      {{- if .Values.contentServerURL }}
-        - name: {{ $initName }}
-          image: "{{ .Values.image.configurator }}-{{ .Values.arch }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          securityContext:
-            privileged: false
-            readOnlyRootFilesystem: true
-            allowPrivilegeEscalation: false
-            runAsNonRoot: true
-            runAsUser: 1001
-            capabilities:
-              drop:
-              - ALL
-          command: ["sh"]
-          args: ["-c", 'until [ $(/usr/local/bin/kubectl get job {{ $jobName }} -o jsonpath="{.status.succeeded}") = 1 ]; do sleep 1; done && echo "WebUsers Created"']
-          resources:
-            requests:
-              cpu: "250m"
-              memory: "128Mi"
-            limits:
-              cpu: "500m"
-              memory: "1028Mi"
-      {{- end }} 
+        {{- end }}
       {{- if .Values.acemq.initVolumeAsRoot }}
+      initContainers:
         - name: qmgr-init
           image: "{{ .Values.image.acemq }}-{{ .Values.arch }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          terminationMessagePath: "/run/termination-log"
-          command: ["runmqserver"]
-          args: ["-i"]
+          command: ["runmqserver", "-i"]
           env:
           - name: LICENSE
             value: {{ .Values.license }}
@@ -478,14 +451,14 @@ spec:
             value: {{ .Values.acemq.qmname | default .Release.Name | replace "-" "" | quote }}
           - name: LOG_FORMAT
             value: {{ .Values.log.format | default "json" | quote }}
-          - name: DEBUG
-            value: "{{ .Values.log.mqDebug | default false }}"
           {{- if .Values.persistence.enabled }}
           volumeMounts:
           - mountPath: "/mnt/mqm"
             name: {{ $volumeClaimTemplateName }}
           {{- end }}
           securityContext:
+            seLinuxOptions:
+              type: spc_t
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: false
             runAsNonRoot: false
@@ -657,7 +630,7 @@ spec:
         {{- end }}
         {{- end }}
         {{- end }}
-        {{- if ne .Values.designerFlowsOperationMode "disabled" }}
+        {{- if .Values.designerFlowsEnabled }}
         - name: tmp
           emptyDir: {}
         - name: workdir

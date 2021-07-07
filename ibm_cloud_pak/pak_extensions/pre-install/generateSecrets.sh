@@ -2,7 +2,7 @@
 #
 # Licensed Materials - Property of IBM
 #
-# 5725-Z44
+# 5737-H33
 #
 # (C) Copyright IBM Corp. 2018  All Rights Reserved.
 #
@@ -20,6 +20,7 @@ SECRET_ARGS=
 if [ -s ./mqsc.txt ]; then
   SECRET_ARGS="${SECRET_ARGS} --from-file=mqsc=./mqsc.txt"
 fi
+
 if [ -s ./adminPassword.txt ]; then
   SECRET_ARGS="${SECRET_ARGS} --from-file=adminPassword=./adminPassword.txt"
 fi
@@ -88,8 +89,8 @@ if [ -s ./policyDescriptor.xml ]; then
   SECRET_ARGS="${SECRET_ARGS} --from-file=policyDescriptor=./policyDescriptor.xml "
 fi
 
-if [ -s ./server.conf.yaml ]; then
-  SECRET_ARGS="${SECRET_ARGS} --from-file=serverconf=./server.conf.yaml "
+if [ -s ./serverconf.yaml ]; then
+  SECRET_ARGS="${SECRET_ARGS} --from-file=serverconf=./serverconf.yaml "
 fi
 
 if [ -s ./setdbparms.txt ]; then
@@ -116,14 +117,10 @@ if [ -s ./agentc.json ]; then
   SECRET_ARGS="${SECRET_ARGS} --from-file=agentc=./agentc.json "
 fi
 
-if [ -s ./credentials.yaml ]; then
-  SECRET_ARGS="${SECRET_ARGS} --from-file=credentials=./credentials.yaml"
-fi
-
 ######################################################
 # Create the Kubernetes secret resource
 ######################################################
 
 echo "Creating secret"
 echo "kubectl create secret generic ${TARGET_SECRET_NAME}${SECRET_ARGS}"
-kubectl create secret generic ${TARGET_SECRET_NAME}${SECRET_ARGS} --dry-run -o yaml | kubectl apply -f -
+kubectl create secret generic ${TARGET_SECRET_NAME}${SECRET_ARGS}
